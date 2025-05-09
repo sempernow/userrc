@@ -1,0 +1,13 @@
+# This ensures all text files use LF (\n) for line endings (EOL) regardless of environment,
+# though to fix all committed files, run:
+# git add --renormalize .
+# git commit -m "Re-normalize all files to use LF line endings"
+* text=auto eol=lf
+# Ignore normalization for binary files : Declare here any that are otherwise questionable.
+*.gif  binary 
+*.webp binary 
+*.tiff binary 
+*.jpg  binary 
+*.jpeg binary 
+*.png  binary
+*.pdf  binary
