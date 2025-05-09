@@ -1,7 +1,7 @@
-# [`sempernow/home`](https://github.com/sempernow/home "GitHub.com") 
+# [`sempernow/userrc`](https://github.com/sempernow/userrc "GitHub.com") 
 
 A portable Bash shell configuration that adapts to its environment 
-and configures many aliases, completion scripts, and user-defined functions,
+and configures useful aliases, completion scripts, and user-defined functions,
 including those for `git`, `docker`, `kubectl` and `helm`.
 
 Tested on:
@@ -16,8 +16,8 @@ Tested on:
 ## Get
 
 ```bash
-git clone https://github.com/sempernow/home.git
-cd home
+git clone https://github.com/sempernow/userrc.git
+cd userrc
 ```
 
 ## Install
