@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+[[ $(whoami) == 'root' ]] || {
+    echo '  MUST run as root'
+    exit 1
+}
+systemctl is-active --quiet firewalld || {
+    echo "Error: firewalld is not running"
+    exit 11
+}
+ACTIVE_ZONE=$(firewall-cmd --get-active-zones | grep -v 'interfaces\|sources' | head -n 1)
+[[ -z "$ACTIVE_ZONE" ]] && {
+    echo "Error: Could not determine active zone"
+    exit 12
+}
+
+echo "============================================="
+echo "Firewalld Settings for Active Zone: $ACTIVE_ZONE"
+echo "============================================="
+
+SERVICES=/tmp/services
+#printf "%s\n" $(sudo firewall-cmd --list-services --zone=$ACTIVE_ZONE) |xargs -I{} sudo firewall-cmd --info-service={} > /tmp/services
+
+# Display basic zone information
+echo -e "\n[Zone Information]"
+firewall-cmd --zone="$ACTIVE_ZONE" --list-all
+
+# Display protocols
+echo -e "\n[Protocols]"
+firewall-cmd --zone="$ACTIVE_ZONE" --list-protocols
+
+# Display rich rules
+echo -e "\n[Rich Rules]"
+firewall-cmd --zone="$ACTIVE_ZONE" --list-rich-rules
+
+# Display icmp blocks
+echo -e "\n[ICMP Blocks]"
+firewall-cmd --zone="$ACTIVE_ZONE" --list-icmp-blocks
+
+# Display masquerade setting
+echo -e "\n[Masquerade]"
+firewall-cmd --zone="$ACTIVE_ZONE" --query-masquerade
+
+# Display interfaces
+echo -e "\n[Interfaces]"
+firewall-cmd --zone="$ACTIVE_ZONE" --list-interfaces
+
+# Display sources
+echo -e "\n[Sources]"
+firewall-cmd --zone="$ACTIVE_ZONE" --list-sources
+
+# Display source ports
+echo -e "\n[Source Ports]"
+firewall-cmd --zone="$ACTIVE_ZONE" --list-source-ports
+
+# Display forward ports
+echo -e "\n[Forward Ports]"
+firewall-cmd --zone="$ACTIVE_ZONE" --list-forward-ports
+
+# Display ports
+echo -e "\n[Ports]"
+firewall-cmd --zone="$ACTIVE_ZONE" --list-ports
+#cat $SERVICES |command grep -e '^[^[:space:]]' -e ports |command grep -v source-ports
+
+# Display services
+echo -e "\n[Services]"
+firewall-cmd --zone="$ACTIVE_ZONE" --list-services
+printf "%s\n" $(sudo firewall-cmd --list-services --zone=$z) |xargs -I{} sudo firewall-cmd --info-service={}
+#cat $SERVICES |command grep -e '^[^[:space:]]' -e source-ports 
+
+
+echo "============================================="
