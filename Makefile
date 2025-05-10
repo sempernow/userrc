@@ -1,3 +1,5 @@
+
+
 ##############################################################################
 ## Makefile.settings : Environment Variables for Makefile(s) …
 #include Makefile.settings
@@ -49,9 +51,9 @@ menu :
 	$(INFO) 'Meta'
 	@echo "html      : Process markdown (.md) into markup (.html)"
 	@echo "mode      : find . -type f … -exec chmod …"
+	@echo "eol       : Fix line endings : Convert all CRLF to LF"
 	@echo "commit    : git commit … && git log …"
 	@echo "push      : git commit … && git push … && git log …"
-
 env :
 	@echo "PRJ_ROOT       : ${PRJ_ROOT}"
 	@echo "HAS_WSL        : ${HAS_WSL}"
@@ -83,24 +85,23 @@ abox :
 rbox :
 	docker run --rm -d --name rbox -v ${PRJ_ROOT}:/root -w /root redhat/ubi9 sleep 1d
 
+getgit :
+	wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
+	wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash
+
 html : md2html perms
 
 md2html : makehtml perms
 
 makehtml :
 	find . -type f -iname '*.md' -exec md2html.exe "{}" \;
-
+eol :
+	find . -type f ! -path '*/.git/*' -exec dos2unix {} \+
 mode perms :
 	find . -type f ! -path './.git/*' -exec chmod 0644 "{}" \+
 	chmod 0755 make.*.sh
-
-getgit :
-	wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
-	wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash
-
 commit :
 	gc && gl && gs
-
 push :
 	gc && git push && gl && gs
 
