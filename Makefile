@@ -98,8 +98,9 @@ makehtml :
 eol :
 	find . -type f ! -path '*/.git/*' -exec dos2unix {} \+
 mode perms :
+	find . -type d ! -path './.git/*' -exec chmod 0755 "{}" \+
 	find . -type f ! -path './.git/*' -exec chmod 0644 "{}" \+
-	chmod 0755 make.*.sh
+	
 commit :
 	gc && gl && gs
 push :
