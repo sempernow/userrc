@@ -1,17 +1,17 @@
-
-
 ##############################################################################
-## Makefile.settings : Environment Variables for Makefile(s) …
+## Makefile.settings : Environment Variables for Makefile(s)
 #include Makefile.settings
-
+# … ⋮ ︙ • “” ‘’ – — ™ ® © ± ° ¹ ² ³ ¼ ½ ¾ ÷ × € ¢ £ ¤ ¥ ₽ ♻ ⚐ ⚑
+# ¦ ¶ § † ‡ ß µ ø Ø ƒ Δ ⚒ ☡ ☈ ☧ ☩ ✚ ☨ ☦ ☓ ♰ ♱ ✖ ☘ 웃 𝐀𝐏𝐏 𝐋𝐀𝐁
+# ⚠ ☢ ☣ ☠ ⚡ ☑ ✅ ❌ 🔒 🧩 📊 📈 🔍 📦 🧳 🥇 💡 🚀 🚧 🔚
 ##############################################################################
 ## Environment variable rules:
 ## - Any TRAILING whitespace KILLS its variable value and may break recipes.
 ## - ESCAPE only that required by the shell (bash).
 ## - Environment hierarchy:
 ##   - Makefile environment OVERRIDEs OS environment lest set using `?=`.
-##      - `FOO ?= bar` is overridden by parent setting; `export FOO=new`.
-##      - `FOO :=`bar` is NOT overridden by parent setting.
+##  	  - `FOO ?= bar` is overridden by parent setting; `export FOO=new`.
+##  	  - `FOO :=`bar` is NOT overridden by parent setting.
 ##   - Docker YAML `env_file:` OVERRIDEs OS and Makefile environments.
 ##   - Docker YAML `environment:` OVERRIDEs YAML `env_file:`.
 ##   - CMD-inline OVERRIDEs ALL REGARDLESS; `make recipeX FOO=new BAR=new2`.
@@ -27,6 +27,8 @@ INFO    := @bash -c 'printf $(YELLOW);echo "@ $$1";printf $(RESTORE)' MESSAGE
 ## Project Meta
 
 export PRJ_ROOT := $(shell pwd)
+export LOG_PRE  := make
+export UTC      := $(shell date '+%Y-%m-%dT%H.%M.%Z')
 
 export GIT_PROMPT_DIR := /usr/share/git-core/contrib/completion
 export HAS_WSL        := $(shell type -t wsl.exe)
