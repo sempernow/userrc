@@ -30,9 +30,9 @@ alias df='df -hT'
 alias du='du -h'
 alias lsblk='lsblk -o SIZE,LABEL,NAME,GROUP,MAJ:MIN,TYPE,FSTYPE,MIN-IO,MOUNTPOINT,UUID'
 [[ $(type -t tree) ]] && alias tree='tree -I vendor --dirsfirst'
-alias cp='cp -p'
-alias copy='cp -up'
-alias update='cp -urpv'
+alias cp='cp --preserve=timestamps'
+alias copy='cp -u'
+alias update='cp -uv'
 
 # Text
 alias cls=clear
