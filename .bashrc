@@ -24,15 +24,13 @@ alias isdos=isDOS
 # FS
 alias ls='ls -hl --color=auto --group-directories-first'
 alias -p |grep ' ll=' >/dev/null 2>&1 && unalias ll
-alias ll='ls -AhlrtL --time-style=long-iso'
-ll >/dev/null 2>&1 || alias ll='ls -AhlrtL --group-directories-first'
+alias ll='ls -Ahlrt --time-style=long-iso'
+ll >/dev/null 2>&1 || alias ll='ls -Ahlrt --group-directories-first'
 alias df='df -hT'
 alias du='du -h'
 alias lsblk='lsblk -o SIZE,LABEL,NAME,GROUP,MAJ:MIN,TYPE,FSTYPE,MIN-IO,MOUNTPOINT,UUID'
 [[ $(type -t tree) ]] && alias tree='tree -I vendor --dirsfirst'
-alias cp='cp --preserve=timestamps'
-alias copy='cp -u'
-alias update='cp -uv'
+alias cp='cp --preserve=mode,timestamps'
 
 # Text
 alias cls=clear
