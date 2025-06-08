@@ -103,8 +103,6 @@ mode perms :
 	find . -type d ! -path './.git/*' -exec chmod 0755 "{}" \+
 	find . -type f ! -path './.git/*' -exec chmod 0644 "{}" \+
 	
-commit :
-	gc && gl && gs
-push :
+commit push :
 	gc && git push && gl && gs
 
