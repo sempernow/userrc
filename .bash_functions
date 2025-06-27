@@ -340,8 +340,8 @@ tls(){
 			C  = ${TLS_C:-US}
 			ST = ${TLS_ST:-NY}
 			L  = ${TLS_L:-Gotham}
-			O  = ${TLS_O:-Foo Inc}
-			OU = ${TLS_OU:-DevOps}
+			O  = ${TLS_O:-Riddler 8132}
+			OU = ${TLS_OU:-Ops}
 			[req_ext]
 			subjectAltName = @alt_names
 			keyUsage = digitalSignature, keyEncipherment
@@ -354,6 +354,15 @@ tls(){
             # certificatePolicies = $policy_OID
             # authorityInfoAccess = caIssuers;URI:http://example.com/ca.pem, OCSP;URI:http://ocsp.example.com
             # basicConstraints = CA:FALSE
+            # CA
+            #
+            # basicConstraints = critical, CA:TRUE, pathlen:1           # Root/Intermediate CA
+            # keyUsage = critical, keyCertSign, cRLSign                 # CA key usage
+            # subjectKeyIdentifier = hash                               # For chain validation
+            # authorityKeyIdentifier = keyid:always                     # For subordinate CAs
+            # certificatePolicies = 1.3.6.1.4.1.YourPolicyOID           # Compliance
+            # crlDistributionPoints = URI:http://crl.example.com/ca.crl
+            # authorityInfoAccess = OCSP;URI:http://ocsp.example.com
         ;;
         "key")
             ### Generate RSA private key
