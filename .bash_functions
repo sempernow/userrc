@@ -319,11 +319,11 @@ tls(){
 			
 				  Set environment variable(s) to override their default:
 			
-				  TLS_C=US
-				  TLS_ST=NY
+				  TLS_O='Riddler 8132'
+				  TLS_OU=Ops
 				  TLS_L=Gotham
-				  TLS_O='Foo Inc'
-				  TLS_OU=DevOps
+				  TLS_ST=NY
+				  TLS_C=US
 				EOH
 
                 return 0
@@ -337,11 +337,11 @@ tls(){
 			req_extensions = req_ext
 			[req_dn]
 			CN = $2
-			C  = ${TLS_C:-US}
-			ST = ${TLS_ST:-NY}
-			L  = ${TLS_L:-Gotham}
 			O  = ${TLS_O:-Riddler 8132}
 			OU = ${TLS_OU:-Ops}
+			L  = ${TLS_L:-Gotham}
+			ST = ${TLS_ST:-NY}
+			C  = ${TLS_C:-US}
 			[req_ext]
 			subjectAltName = @alt_names
 			keyUsage = digitalSignature, keyEncipherment
