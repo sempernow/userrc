@@ -403,7 +403,7 @@ tls(){
                         echo "  USAGE: $FUNCNAME csr CSR_PATH"
                         return 0
                     }
-                    openssl req -text -noout -verify -in $2 | tee $artifact
+                    openssl req -text -noout -verify -in $2 
                 }
             ;;
         "server")
@@ -414,14 +414,14 @@ tls(){
             }
             artifact="/tmp/tls.server.${2}_${3:-443}_full_chain_cert.log"
             # -servername limits to the declared domain name using Server Name Indication (SNI)
-            openssl s_client -connect $2:${3:-443} -servername $2 -showcerts < /dev/null | tee "$artifact"
+            openssl s_client -connect $2:${3:-443} -servername $2 -showcerts < /dev/null 
         ;;
         "crt")
             [[ $2 == "verify" ]] && {
                 # Verify the server's ca-signed certificate against the CA that signed it.
                 [[ -f $3 && -f $4 ]] && {
                     artifact=/tmp/tls.crt.verify.${3##*/}.log
-                    openssl verify -CAfile $3 $4 | tee $artifact
+                    openssl verify -CAfile $3 $4 
                 } || {
                     # CA_CERT_BUNDLE is path to trust-store file; concatenated CA certificates in PEM format.
                     # SERVER_CERT is path to server's full-chain certificate AKA certificate-chain file
@@ -432,7 +432,8 @@ tls(){
             [[ $2 == "parse" ]] && {
                 [[ -f $3 ]] && {
                     artifact=/tmp/tls.crt.parse.${3##*/}.log
-                    openssl x509 -in $3 -noout -issuer -subject -startdate -enddate -ext subjectAltName |tee $artifact 
+                    openssl x509 -in $3 -noout -issuer -subject -startdate -enddate \
+                        -ext subjectAltName,basicConstraints,keyUsage,subjectKeyIdentifier 
                 } || {
                     echo "  USAGE: $FUNCNAME crt parse SERVER_CERT"
                     return 0
