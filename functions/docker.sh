@@ -13,7 +13,7 @@ trap 'set +a' RETURN
 ## docker image
 di(){ h="$(docker image ls |head -n1)";echo "$h";docker image ls |grep -v REPOSITORY |sort; }
 dij(){ # as valid JSON
-    type -t jq 2>/dev/null || { echo '  REQUIREs jq';return 0; }
+    type -t jq >/dev/null 2>&1 || { echo '  REQUIREs jq';return 0; }
     docker image ls --digests --format "{{json .}}" |jq -Mr . --slurp
 }
 dit(){ # USAGE: dit [--digests]
