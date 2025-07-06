@@ -311,7 +311,7 @@ tls(){
     unset artifact
     case $1 in
         "cnf")
-            # Make configuration file (.cnf) for CSR
+            # Make configuration file (.cnf) for CSR of an End-entity (Server)
             [[ $2 ]] || {
                 echo "  USAGE: $FUNCNAME cnf CN"
                 # ***  PRESERVE TABS of HEREDOC  ***
@@ -331,38 +331,29 @@ tls(){
             artifact="${2}.cnf"
             # ***  PRESERVE TABS of HEREDOC  ***
 			cat <<-EOH |tee $artifact
-			[req]
-			prompt = no
-			distinguished_name = req_dn
-			req_extensions = req_ext
-			[req_dn]
-			CN = $2
-			O  = ${TLS_O:-Riddler 8132}
-			OU = ${TLS_OU:-Ops}
-			L  = ${TLS_L:-Gotham}
-			ST = ${TLS_ST:-NY}
-			C  = ${TLS_C:-US}
-			[req_ext]
-			subjectAltName = @alt_names
-			keyUsage = digitalSignature, keyEncipherment
-			extendedKeyUsage = serverAuth, clientAuth
-			[alt_names]
+			[ req ]
+			prompt              = no
+			default_bits        = 2048
+			default_md          = sha256
+			distinguished_name  = req_distinguished_name 
+			req_extensions      = req_ext
+			[ req_distinguished_name ]
+			CN              = $2
+			O               = ${TLS_O:-Penguin Inc}
+			OU              = ${TLS_OU:-DevOps}
+			L               = ${TLS_L:-Gotham}
+			ST              = ${TLS_ST:-NY}
+			C               = ${TLS_C:-US}
+			[ req_ext ]
+			subjectAltName          = @alt_names
+			keyUsage                = critical, digitalSignature, keyEncipherment
+			extendedKeyUsage        = serverAuth
+			subjectKeyIdentifier    = hash
+			authorityKeyIdentifier  = keyid:always,issuer
+			[ alt_names ]
 			DNS.1 = $2
 			DNS.2 = *.$2
 			EOH
-            # Others under [req_ext]
-            # certificatePolicies = $policy_OID
-            # authorityInfoAccess = caIssuers;URI:http://example.com/ca.pem, OCSP;URI:http://ocsp.example.com
-            # basicConstraints = CA:FALSE
-            # CA
-            #
-            # basicConstraints = critical, CA:TRUE, pathlen:1           # Root/Intermediate CA
-            # keyUsage = critical, keyCertSign, cRLSign                 # CA key usage
-            # subjectKeyIdentifier = hash                               # For chain validation
-            # authorityKeyIdentifier = keyid:always                     # For subordinate CAs
-            # certificatePolicies = 1.3.6.1.4.1.YourPolicyOID           # Compliance
-            # crlDistributionPoints = URI:http://crl.example.com/ca.crl
-            # authorityInfoAccess = OCSP;URI:http://ocsp.example.com
         ;;
         "key")
             ### Generate RSA private key
@@ -432,8 +423,8 @@ tls(){
             [[ $2 == "parse" ]] && {
                 [[ -f $3 ]] && {
                     artifact=/tmp/tls.crt.parse.${3##*/}.log
-                    openssl x509 -in $3 -noout -issuer -subject -startdate -enddate \
-                        -ext subjectAltName,basicConstraints,keyUsage,subjectKeyIdentifier 
+                    x509v3='subjectAltName,issuerAltName,basicConstraints,keyUsage,extendedKeyUsage,authorityInfoAccess,subjectKeyIdentifier,authorityKeyIdentifier,crlDistributionPoints,issuingDistributionPoints,policyConstraints,nameConstraints'
+                    openssl x509 -in $3 -noout -subject -issuer -startdate -enddate -ext "$x509v3"
                 } || {
                     echo "  USAGE: $FUNCNAME crt parse SERVER_CERT"
                     return 0
