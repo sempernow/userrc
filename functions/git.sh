@@ -27,6 +27,7 @@ gi(){
 }
 ga(){ git add . ; git status; }
 gb(){ git branch --all;echo;git remote -v; }
+gls(){ git ls-tree -r HEAD --name-only; }
 gbd(){
     [[ "$1" ]] || return 90
     [[ "$(git branch --all |grep $1)" ]] || return 91
