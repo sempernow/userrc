@@ -30,7 +30,7 @@ unset flag_any_k8s
 [[ $(type -t kubectl) ]] && {
     flag_any_k8s=1
     set -a
-    all='deploy,ds,sts,pod,svc,ep,ingress,cm,secret,pvc,pv'
+    all='Role,RoleBinding,sts,ds,deploy,pod,svc,ep,ingress,cm,secret,pvc'
     k(){ kubectl "$@"; }
     set +a;set +o posix
     source <(kubectl completion bash)
