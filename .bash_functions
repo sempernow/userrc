@@ -424,7 +424,7 @@ tls(){
                 [[ -f $3 ]] && {
                     artifact=/tmp/tls.crt.parse.${3##*/}.log
                     x509v3='subjectAltName,issuerAltName,basicConstraints,keyUsage,extendedKeyUsage,authorityInfoAccess,subjectKeyIdentifier,authorityKeyIdentifier,crlDistributionPoints,issuingDistributionPoints,policyConstraints,nameConstraints'
-                    openssl x509 -in $3 -noout -subject -issuer -startdate -enddate -ext "$x509v3"
+                    openssl x509 -in $3 -noout -subject -issuer -startdate -enddate -serial -ext "$x509v3"
                 } || {
                     echo "  USAGE: $FUNCNAME crt parse SERVER_CERT"
                     return 0
