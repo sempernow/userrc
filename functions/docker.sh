@@ -21,7 +21,17 @@ dit(){ # USAGE: dit [--digests]
     d(){ docker image ls --format "table {{.ID}}\t{{.Repository}}:{{.Tag}}\t{{.Size}}" $@; }
     echo "$( d |head -n1)";d $@ |grep -v REPOSITORY |sort -t' ' -k2
 }
-
+dii(){
+    type -t yq >/dev/null 2>&1 || {
+        echo REQUIREs yq
+        return 1    
+    }
+    [[ $1 ]] || {
+        echo "USAGE : $FUNCNAME <IMAGE>"
+        return 2
+    }
+    docker image inspect $1 |yq eval -P -o yaml |yq '.[] | (.RepoTags,.RepoDigests,.Config)'
+}
 drmi(){ # Remove image(s) per substring ($1), else prune
     [[ "$@" ]] &&
         docker image ls |grep "${@%:*}" |grep "${@#*:}" |gawk '{print $3}' \
