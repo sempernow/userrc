@@ -16,10 +16,11 @@ dij(){ # as valid JSON
     type -t jq >/dev/null 2>&1 || { echo '  REQUIREs jq';return 0; }
     docker image ls --digests --format "{{json .}}" |jq -Mr . --slurp
 }
-dit(){ # USAGE: dit [--digests]
-    # Must remote "table " from format for actual tab-delimeted fields.
-    d(){ docker image ls --format "table {{.ID}}\t{{.Repository}}:{{.Tag}}\t{{.Size}}" $@; }
-    echo "$( d |head -n1)";d $@ |grep -v REPOSITORY |sort -t' ' -k2
+dit(){ 
+    d(){ docker image ls --format "table {{.ID}}\t{{.Repository}}:{{.Tag}}\t{{.Size}}"; }
+    d |head -n1
+    [[ $1 ]] && d |grep $1 |grep -v REPOSITORY |sort -t' ' -k2
+    [[ $1 ]] || d |grep -v REPOSITORY |sort -t' ' -k2
 }
 dii(){
     type -t yq >/dev/null 2>&1 || {
