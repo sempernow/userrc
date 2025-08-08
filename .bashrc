@@ -6,6 +6,7 @@
 alias os='cat /etc/os-release'
 alias cpu='cat /proc/cpuinfo'
 alias mem='cat /proc/meminfo'
+alias top='top -em -Eg -oRSS'
 
 # Apps
 alias python=python3

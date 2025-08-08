@@ -161,6 +161,12 @@ journal(){ # -e : Jump to end, --no-pager : Show full message (truncated by defa
 #######
 # Other
 
+cpuinfo(){ 
+    echo -e "arch\t\t: $(echo $HOSTTYPE |cut -d'"' -f2)"
+    cat /proc/cpuinfo |grep -e name -e MHz -e cores -e siblings |sed 's/siblings/threads   /' |sort -u
+}
+alias cpu=cpuinfo
+
 # Cgroup driver
 cgroup(){
     fs=$(stat -fc %T /sys/fs/cgroup/)
@@ -169,9 +175,16 @@ cgroup(){
     echo unknown
 }
 
+# Process
+psp(){ # ps : Process info of declared pattern (command, PID, ...), else all of current user
+    ps -axo user,pid,rss,pmem,pcpu,command \
+      |grep -v grep \
+      |grep -v 'ps -' \
+      |grep -e PID -e "${@:-$USER}"
+}
+
 # Memory
-topr(){ top -emEms -oRES; }
-psrss(){ # RSS top ($1 else 12) or declared-command ($1) usage in MiB
+psrss(){ # RSS usage [MiB] of declared command ($1) else top 12
     e=-e
     [[ "$1" =~ ^-?[0-9]+$ ]] && n=$1 || {
         n=12;[[ $1 ]] && unset e 
@@ -183,11 +196,7 @@ psrss(){ # RSS top ($1 else 12) or declared-command ($1) usage in MiB
     [[ $e ]] && ps $e -o pid,comm,rss,pmem,pcpu --sort=-rss --no-headers \
         |awk '{ printf "%-8s %-20s %6.0f       %5s %5s\n", $1, $2, $3/1024, $4, $5}' |head -$n
 }
-meminfo(){
-    cat /proc/meminfo |awk '{ printf "%-16s %10.0f %4s\n", $1, $2/1024,"MiB" }' |grep -v ' 0' 
-}
-alias mem=meminfo
-rss(){ # RSS per process
+rss(){ # Show actual (physical) memory usage (RSS, HWM, etc.) of a process by its command ($1)
     pid_of_cmd(){
         [[ $1 ]] || return 1
         ps -C $1 |grep $1 |awk '{print $1}'
@@ -195,6 +204,10 @@ rss(){ # RSS per process
     pid=$(pid_of_cmd $1) && cat /proc/$pid/status \
         |grep Vm |awk '{ printf "%-8s %5.0f %4s\n", $1, $2/1024,"MiB" }' |grep -v ' 0 '
 }
+meminfo(){
+    cat /proc/meminfo |awk '{ printf "%-16s %10.0f %4s\n", $1, $2/1024,"MiB" }' |grep -v ' 0' 
+}
+alias mem=meminfo
 
 # Current USER:GROUP
 ug(){ printf "$(id -u):$(id -g)"; }
