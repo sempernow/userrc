@@ -14,6 +14,10 @@ trap 'set +a' RETURN
 [[ "$_PID_1xSHELL" ]] ||
     _PID_1xSHELL=$(ps |grep 'bash' |sort -k 7 |awk '{print $1;}' |head -n 1)
 
+########
+# String
+trim(){ local x="${@##+([[:space:]])}"; x="${x%%+([[:space:]])}"; printf "%s" "$x"; }
+
 ######
 # Date
 
@@ -485,13 +489,19 @@ hostfprs(){
 ######
 # Meta
 
-vars(){ declare -p |grep -E 'declare -(x|[a-z]*x)' |awk '{print $3}' |grep -v __git; }
-fx(){ declare -f; }
 declared(){
     [[ $1 == 'v' ]] && vars
     [[ $1 == 'f' ]] && fx
     [[ $1 ]] || printf "  %s\n\n  %s\n" 'List all user-defined variables (v), or functions (f).' 'USAGE: declared v|f'
 }
+fx(){ declare -f; }
+vars(){ declare -p |grep -E 'declare -(x|[a-z]*x)' |awk '{print $3}' |grep -v __git; }
+envsans(){
+    # Print environment variables without functions
+    declare -p |grep -E '^declare -x [^=]+=' |sed 's,",,g' |awk '{print $3}'
+    printf "\n\t(%s)\n" 'Environment variables containing special characters may not have printed accurately.'
+}
+
 colors() {
     # Each is a background color and contrasting text color.
     # Usage: colors;printf "\n %s\n" "$green MESSAGE $norm"
@@ -507,7 +517,6 @@ colors() {
     aqux="$(   tput setab 6 ; tput setaf 6 )"   # hidden text
     zzz="$normal"
     norm="$normal"
-
 }
 
 errMSG() {
@@ -575,11 +584,6 @@ shlvl(){
     colors; [[ "$@" ]] && _msg=": $@" || unset _msg
     [[ "${FUNCNAME[1]}" == 'x' ]] && _shlvl=$(( $SHLVL - 1 )) || _shlvl=$SHLVL
     [[ "$_shlvl" == "1" ]] && [[ "$PPID" == "$_PID_1xSHELL" ]] && { printf "\n %s\n" "$red $(( $_shlvl ))x ${SHELL##*/} $norm $_msg"; } || { printf "\n %s\n" "$(( $_shlvl ))x ${SHELL##*/} $_msg"; }
-}
-envsans(){
-    # Print environment variables without functions
-    declare -p |grep -E '^declare -x [^=]+=' |sed 's,",,g' |awk '{print $3}'
-    printf "\n\t(%s)\n" 'Environment variables containing special characters may not have printed accurately.'
 }
 
 ## End here if not interactive
