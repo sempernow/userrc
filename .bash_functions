@@ -267,6 +267,10 @@ woff2base64() { [[ "$(type -t base64)" && -f "$@" ]] && base64 -w 0 "$@"; }
 #########
 # Network
 
+dns2ip(){
+    printf "%s" "$(nslookup $1 |grep -A1 Name |tail -n1 |cut -d' ' -f2)"
+}
+
 cidr(){
     ip -4 -brief addr "$@" \
         |sed -r 's/[[:cntrl:]]\[[0-9]{1,3}m//g' \
