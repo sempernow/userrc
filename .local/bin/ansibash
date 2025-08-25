@@ -27,7 +27,7 @@
 # For more information, please refer to <http://unlicense.org/>
 # -----------------------------------------------------------------------
 
-export ANSIBASH_VERSION='0.5.0 build 2025-08-24'
+export ANSIBASH_VERSION='0.5.1 build 2025-08-25'
 
 (return 0 2>/dev/null) && isSourced=1 || isSourced=0
 
@@ -157,7 +157,7 @@ _ansibash(){
         }
         [[ $pw ]] || {
             [[ $mode == '-x' ]] && { ssh $conn "$@";continue; }
-            [[ $mode == '-c' ]] && { ssh $conn /bin/bash -c "$@" && continue || return $?; }
+            [[ $mode == '-c' ]] && { ssh $conn /bin/bash -c "'$@'" && continue || return $?; }
             [[ $mode == '-s' ]] && {
                 [[ -r $script ]] || return 2
                 cat $script |ssh -T $conn /bin/bash -s - "$@" && continue || return $?
