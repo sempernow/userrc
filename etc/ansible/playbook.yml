@@ -1,0 +1,17 @@
+---
+- name: Testing
+  hosts: target
+  vars:
+    config_file_path: ansible.cfg
+    a: "This is a"
+    b: 22
+  gather_facts: false
+  tasks:
+  - name: Task 1 # @ Target machine(s) HOME dir
+    become: true
+    # Shell script 
+    #command: "/home/u1/ansible/foo.sh {{a}} {{b}}"
+    command: "/home/u2/foo.sh {{a}} {{b}}"
+    # Shell command
+    #command: printf "%s\%s\n" $(hostname) $(id) >foo.log
+    #command: cat /etc/sudoers.d/gitops 

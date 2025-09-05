@@ -1,0 +1,8 @@
+Defaults:%iac    timestamp_timeout=-1
+Defaults         timestamp_timeout=60
+Defaults    editor=/usr/bin/vim
+Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
+%wheel      ALL=(ALL)       ALL
+%iac        ALL=(ALL)       NOPASSWD: ALL
+
+

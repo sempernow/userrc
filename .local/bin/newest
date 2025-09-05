@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Simplest:
+# find . -type f ! -path '*/.git/*' -printf '%T@ %P\n' |sort -r |head -n 1 |cut -d' ' -f2-
+# find . ! -path '*/.git/*' -type f -printf '%T@ %P\n ' -exec env TZ=UTC date -r {} +'%Y-%m-%dT%H:%MZ' \; |sort -r |head -1
+_newest_1(){
+
+    [[ -d "$1" ]] && {
+        
+        pushd "$1" >/dev/null 2>&1
+        #relpath="$(find "$(pwd)" ! -path '*/.git/*' -type f -printf '%T@ %P\n' |sort -r |cut -d' ' -f2- |head -n1)"
+        printf "%s" "$(find "$(pwd)" ! -path '*/.git/*' -type f -printf '%T@ %p\n' |sort -r |cut -d' ' -f2- |head -n1)"
+        #printf "%s @ %s" "$relpath" "$(env TZ=UTC date -r "$relpath" +'%Y-%m-%dT%H:%MZ')"
+        popd >/dev/null 2>&1
+
+        return 0
+    }
+    [[ -f "$1" ]] && printf "%s" "$1"
+}
+
+_newest_2() {( 
+    # PARAMs: [ @ FNAME ] | [ ROOT-PATH [ -1(PWD-only) | t(prepend mtime) ] ] | (default @ $PWD) 
+    # STDOUT: abs-path of newest FILE in $@ [full-depth]
+
+    [[ "$1" == '@' ]] && find $PWD  -type f -iname "${2/##*/}" -printf "%T@ %p\n" |sort -n |tail -1 |cut -f2- -d" "
+    [[ "$2" == '-1' ]] && _PWD_only='-maxdepth 1'|| unset _PWD_only
+    [[ "$1" ]] && { [[ -e "$1" ]] || return 99 ; }
+    _newest="$1" ; _newest="${_newest:-$PWD}"      
+    # if input path is a file, then print it and end
+    [[ -d "$_newest" ]] || { printf "%s" "$_newest" ; return 0 ; }
+
+    # get abs-path of newest in path [ignore certain paths]
+     _newest="$( \
+     find "${_newest}" $_PWD_only -type f \
+     \( \
+     ! -path '*/.git/*' \
+     ! -ipath '*/$RECYCLE.BIN*' \
+     ! -path '*/System Volume Information/*' \
+     ! -iname 'Thumbs.db' \
+     ! -iname '.*_history' \
+     \) \
+     -printf "%T@ %p\n" \
+     | sort -n \
+     | tail -1 \
+     | cut -f2- -d' ' \
+     )" 
+
+    # print abs-path of newest, else that of [empty] input-folder;
+    # if 't' arg, then prepend mtime
+    [[ "$_newest" ]] || { _newest="$1" ; _newest="${_newest:-$PWD}" ; }
+    [[ "$_newest" == '.' ]] && _newest="$PWD" 
+    [[ "$2" == 't' || "$3" == 't' ]] && {
+        find "$_newest" -printf "%TY-%Tm-%TdT%TH:%TM  %p " 
+    } || {
+        printf "%s" "$_newest"
+    }
+
+    return 0
+)}
+
+#echo ''
+#_newest_1 "$@"
+#echo ''
+_newest_2 "$@"
+
+exit

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+[[ $(whoami) == 'root' ]] || {
+    echo '  MUST run as root'
+    exit 1
+}
+systemctl is-active --quiet firewalld || {
+    echo "Error: firewalld is not running"
+    exit 11
+}
+ACTIVE_ZONE=$(firewall-cmd --get-active-zones | grep -v 'interfaces\|sources' | head -n 1)
+[[ -z "$ACTIVE_ZONE" ]] && {
+    echo "Error: Could not determine active zone"
+    exit 12
+}
+
+echo "============================================="
+echo "Ports allowed for Active Zone: $ACTIVE_ZONE"
+echo "============================================="
+
+SERVICES=/tmp/services
+printf "%s\n" $(sudo firewall-cmd --list-services --zone=$ACTIVE_ZONE) |xargs -I{} sudo firewall-cmd --info-service={} > /tmp/services
+
+echo 'bare (sans service)'
+echo "  ports: $(firewall-cmd --zone="$ACTIVE_ZONE" --list-ports)"
+cat $SERVICES |command grep -e '^[^[:space:]]' -e ports |command grep -v source-ports
+
+echo "============================================="
