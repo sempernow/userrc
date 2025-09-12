@@ -14,6 +14,7 @@ set -a # Export all
 trap 'set +a' RETURN
 #isBashWinSourced=1
 
+[[ -d /s/DEV ]] && DEV='/s/DEV'
 mkdir -p /c/TEMP
 TEMP='/c/TEMP'
 for dir in "$TMP" "/tmp" "$TMPDIR" "$TEMP";do

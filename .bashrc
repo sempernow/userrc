@@ -7,6 +7,8 @@ alias os='cat /etc/os-release'
 alias cpu='cat /proc/cpuinfo'
 alias mem='cat /proc/meminfo'
 alias top='top -em -Eg -oRSS'
+alias systemctl='systemctl --no-pager'
+alias journalctl='journalctl --no-pager'
 
 # Apps
 alias python=python3
@@ -43,21 +45,29 @@ alias grepba='grep -B5 -A5'
 # alias fgrep='fgrep --color=auto'              # show differences in colour
 alias sha2=sha256
 
-# End here if not bash
-[[ true ]] || { source ~/.bash_functions; return; }
-
 # Network
 ip -c addr > /dev/null 2>&1 && alias ip='ip -c'
+
+# Test for GNU Bourne-Again SHell (bash) and end here if not
+if [ -n "$BASH_VERSION" ]; then
+    isBash=1 
+else
+    unset isBash
+    source ~/.bash_functions
+   
+    echo ⚠️"⚠  This shell is NOT bash."
+    return
+fi
 
 # End here if previously sourced unless from /etc/profile.d/
 [[ "$BASH_SOURCE" =~ "/etc/profile.d" ]] || {
     [[ "$isBashrcSourced" ]] && return
 }
-set -a # Export all
-trap 'set +a' RETURN
 #isBashrcSourced=1
 
-# Test for GNU Bourne-Again SHell (bash)
+set -a # Export all
+trap 'set +a' RETURN
+
 [[ -n "${BASH_VERSION}" ]] && isBash=1    || unset isBash
 [[ "$PATH" =~ 'Windows' ]] && isWindows=1 || unset isWindows
 [[ "$(type -t wsl.exe)" ]] && hasWSL=1    || unset hasWSL
@@ -82,6 +92,10 @@ trap 'set +a' RETURN
 # Configure to newest Golang version if any installed @ /usr/local/go[N.N.N]
 [[ -d /usr/local ]] && GOROOT=$(find /usr/local -maxdepth 1 -type d -path '*/go*' |sort |tail -n 1)
 [[ -d $GOROOT ]] && PATH=$GOROOT/bin:$PATH
+
+# Configure to brew if installed
+[[ -f /home/linuxbrew/.linuxbrew/Homebrew/bin/brew ]] &&
+    eval "$(/home/linuxbrew/.linuxbrew/Homebrew/bin/brew shellenv)"
 
 # History (history) Options
 #
@@ -143,14 +157,36 @@ _completion_loader(){
 ########
 # Prompt
 
+# Git prompt
 # Source git-prompt.sh, which exports all required by 
 # Git's conditional prompt function: __git_ps1. See PS1.
 [[ "$isBash" ]] && {
-    git_prompt="${home}/.git-prompt.sh"
+    git_prompt="${HOME}/.git-prompt.sh"
     [[ -f "$git_prompt" ]] && source $git_prompt || {
         git_prompt=/usr/share/git-core/contrib/completion/git-prompt.sh
         [[ -f "$git_prompt" ]] && source $git_prompt
     }
+    # Show unstaged changes (*)
+    export GIT_PS1_SHOWDIRTYSTATE=true
+
+    # Show staged changes (+)
+    export GIT_PS1_SHOWSTASHSTATE=true
+
+    # Show untracked files (%)
+    export GIT_PS1_SHOWUNTRACKEDFILES=true
+
+    # Show upstream status (<, >, =, <>)
+    export GIT_PS1_SHOWUPSTREAM="auto"
+
+    # Show if something is in progress (|CHERRY-PICKING, |REBASE-i, etc.)
+    export GIT_PS1_SHOWCONFLICTSTATE="yes"
+
+    # TODO : Integrate into our prompt : Does not do so by default
+    ## git clone https://github.com/magicmonty/bash-git-prompt.git ~/.bash-git-prompt --depth=1
+    #    [[ -f "$HOME/.bash-git-prompt/gitprompt.sh" ]] && {
+    #        GIT_PROMPT_ONLY_IN_REPO=1
+    #        source "$HOME/.bash-git-prompt/gitprompt.sh"
+    #    }
 }
 unset home
 
@@ -212,7 +248,7 @@ PS1="$PS1"'\[\e[1;32m\] \w\[\e[0m\]'                                        # + 
 # PS1="$PS1"'\n'                                     # newline
 
 # PS1="$PS1""$BLUE\u$GREY@$BLUE\h"                                # $USER@$(hostname)
-# [[ $( type -t __git_ps1 ) ]] && PS1="$PS1""$WHITE`__git_ps1`"   # + Show "(BRANCH)"            (@ ./.git)
+#[[ $( type -t __git_ps1 ) ]] && PS1="$PS1""$WHITE`__git_ps1`"   # + Show "(BRANCH)"            (@ ./.git)
 # #PS1="$PS1""$GREY [$os$ver] [\t] [$SHLVL] [#\j]$NC"             # + [$os$ver] [HH:mm:ss] [$SHLVL] [jobs]
 # [[ $isBash ]] && PS1="$PS1""$GREY [\t] [$SHLVL] [#\j]$NC"       # + [HH:mm:ss] [$SHLVL] [jobs] (@ bash)
 # [[ ! $isBash ]] && PS1="$PS1""$GREY [\t] [$SHLVL] $NC"          # + [HH:mm:ss] [$SHLVL]        (@ sh)

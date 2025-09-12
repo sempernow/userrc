@@ -1,9 +1,15 @@
 # source /etc/profile.d/k8s.sh
-##################################################
-# Configure bash shell for Docker
-##################################################
-type -t docker >/dev/null 2>&1 || type -t podman >/dev/null 2>&1 || return
-type -t podman >/dev/null 2>&1 && alias docker=podman
+#######################################################
+# Configure bash shell for docker else podman if exist
+#######################################################
+type -t docker >/dev/null 2>&1 ||
+    type -t podman >/dev/null 2>&1 ||
+        return
+
+type -t podman >/dev/null 2>&1 && {
+    type -t docker >/dev/null 2>&1 ||
+        alias docker=podman
+}
 
 [[ "$isBashDockerSourced" ]] && return
 set -a # Export all
@@ -11,13 +17,29 @@ trap 'set +a' RETURN
 #isBashDockerSourced=1
 
 ## docker image
-di(){ h="$(docker image ls |head -n1)";echo "$h";docker image ls |grep -v REPOSITORY |sort; }
+di(){ 
+    [[ $2 =~ 'digest' ]] && digest=--digests || unset digest
+    [[ $1 =~ '--digest' ]] && digest=--digests && set --
+    d(){ docker image ls $digest; }
+    d |head -n1
+    [[ $1 ]] && d |grep $1 |grep -v REPOSITORY |sort
+    [[ $1 ]] || d |grep -v REPOSITORY |sort
+}
 dij(){ # as valid JSON
     type -t jq >/dev/null 2>&1 || { echo '  REQUIREs jq';return 0; }
-    docker image ls --digests --format "{{json .}}" |jq -Mr . --slurp
+    d(){
+        _dij(){ docker image ls --digests --format "{{json .}}"; }
+        [[ $1 ]] && _dij |grep ${1%%:*}
+        [[ $1 ]] || _dij
+    }
+    d "$1" |jq -Mr . --slurp |
+        jq -Mr '.[] | {image: (.Repository + ":" + .Tag), size: .Size, built: .CreatedAt, age: .CreatedSince, digest:.Digest}' |
+            jq -Mr . --slurp
 }
 dit(){ 
-    d(){ docker image ls --format "table {{.ID}}\t{{.Repository}}:{{.Tag}}\t{{.Size}}"; }
+    [[ $2 =~ 'digest' ]] && digest=--digests || unset digest
+    [[ $1 =~ '--digest' ]] && digest=--digests && set --
+    d(){ docker image ls $digest  --format "table {{.ID}}\t{{.Repository}}:{{.Tag}}\t{{.Size}}"; }
     d |head -n1
     [[ $1 ]] && d |grep $1 |grep -v REPOSITORY |sort -t' ' -k2
     [[ $1 ]] || d |grep -v REPOSITORY |sort -t' ' -k2
@@ -34,8 +56,8 @@ dii(){
     docker image inspect $1 |yq eval -P -o yaml |yq '.[] | (.RepoTags,.RepoDigests,.Config)'
 }
 drmi(){ # Remove image(s) per substring ($1), else prune
-    [[ "$@" ]] &&
-        docker image ls |grep "${@%:*}" |grep "${@#*:}" |gawk '{print $3}' \
+    [[ "$1" ]] &&
+        docker image ls |grep "${1%:*}" |grep "${@#*:}" |gawk '{print $3}' \
             |xargs docker image rm -f ||
                 docker image prune -f
 }

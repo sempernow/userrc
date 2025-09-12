@@ -7,6 +7,8 @@
 #[[ "$-" != *i* ]] && return 0
 [[ -z "$PS1" ]] && return 0
 
+#temp 2>/dev/null
+
 #[[ "$BASH_SOURCE" ]] && echo "@ ${BASH_SOURCE##*/}"
 [[ "$BASH_SOURCE" ]] && echo "@ $BASH_SOURCE"
 
