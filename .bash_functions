@@ -269,6 +269,12 @@ woff2base64() { [[ "$(type -t base64)" && -f "$@" ]] && base64 -w 0 "$@"; }
 #########
 # Network
 
+fws(){ # info of all services of zone $1 else 1st-found active zone else public zone
+    zone=$1 || zone=$(sudo firewall-cmd --get-active-zone |head -n1) || zone=public
+    printf "%s\n" $(sudo firewall-cmd --list-services --zone=$zone) |
+        xargs -I{} sudo firewall-cmd --info-service={}
+}
+
 dns2ip(){
     printf "%s" "$(nslookup $1 |grep -A1 Name |tail -n1 |cut -d' ' -f2)"
 }
