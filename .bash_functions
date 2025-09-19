@@ -102,6 +102,8 @@ path(){
     root(){ push / ; }
     home(){ push "$HOME"; }
     temp(){ push "$TMPDIR"; }
+    [[ -d $DEV ]] && meta(){ push "$DEV/devops/meta"; }
+    [[ -d $DEV ]] && infra(){ push "$DEV/devops/infra"; }
 }
 mode(){
     # octal human fname
