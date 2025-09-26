@@ -17,7 +17,14 @@ trap 'set +a' RETURN
 #isBashDockerSourced=1
 
 ## docker image
-di(){ h="$(docker image ls |head -n1)";echo "$h";docker image ls |grep -v REPOSITORY |sort; }
+di(){ 
+    [[ $2 =~ 'digest' ]] && digest=--digests || unset digest
+    [[ $1 =~ '--digest' ]] && digest=--digests && set --
+    d(){ docker image ls $digest; }
+    d |head -n1
+    [[ $1 ]] && d |grep $1 |grep -v REPOSITORY |sort
+    [[ $1 ]] || d |grep -v REPOSITORY |sort
+}
 dij(){ # as valid JSON
     type -t jq >/dev/null 2>&1 || { echo '  REQUIREs jq';return 0; }
     d(){
