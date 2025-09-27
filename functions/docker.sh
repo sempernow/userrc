@@ -29,7 +29,7 @@ dij(){ # as valid JSON
     type -t jq >/dev/null 2>&1 || { echo '  REQUIREs jq';return 0; }
     d(){
         _dij(){ docker image ls --digests --format "{{json .}}"; }
-        [[ $1 ]] && _dij |grep $1
+        [[ $1 ]] && _dij |grep ${1%%:*}
         [[ $1 ]] || _dij
     }
     d "$1" |jq -Mr . --slurp |
