@@ -34,7 +34,7 @@ dij(){ # as valid JSON
     }
     d "$1" |jq -Mr . --slurp |
         jq -Mr '.[] | {image: (.Repository + ":" + .Tag), size: .Size, built: .CreatedAt, age: .CreatedSince, digest:.Digest}' |
-            jq . --slurp
+            jq -Mr . --slurp
 }
 dit(){ 
     [[ $2 =~ 'digest' ]] && digest=--digests || unset digest
