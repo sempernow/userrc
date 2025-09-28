@@ -224,6 +224,33 @@ ug(){ printf "$(id -u):$(id -g)"; }
 grepall(){ [[ "$1" ]] && find . -type f -exec grep -il "$1" "{}" \+ ; }
 
 # Crypto
+AGE_ID="~/.age/age-id-20250308"
+AGE_ACCT=sempernow
+agere(){
+    type -t age-keygen >/dev/null 2>&1 &&
+        type -t curl >/dev/null 2>&1 ||
+            return 1
+
+    curl -qsLf https://github.com/${AGE_ACCT}.keys
+    curl -qsLf https://gitlab.com/${AGE_ACCT}.keys
+    age-keygen -y "$AGE_ID" 2>/dev/null
+}
+ageen(){
+    [[ -r "$@" ]] &&
+        cat <(agere) |age -e -a -R - -o "${@}.age" "$@" ||
+            type $FUNCNAME
+}
+agede(){
+    [[ -r "$@" ]] || {
+        type $FUNCNAME
+        
+        return 1
+    }
+    age -d -i ~/.ssh/gitlab_${AGE_ACCT} "$@" 2>/dev/null ||
+        age -d -i ~/.ssh/github_${AGE_ACCT} "$@" 2>/dev/null ||
+            age -d -i "$AGE_ID" "$@" 2>/dev/null ||
+                echo "❌  ERR : Not decrypted"
+}
 randa(){
     # ARGs: [LENGTH(Default:32]
     cat /dev/urandom |tr -dc 'a-zA-Z0-9' |fold -w ${1:-32} |head -n 1
