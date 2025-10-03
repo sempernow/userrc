@@ -224,7 +224,7 @@ ug(){ printf "$(id -u):$(id -g)"; }
 grepall(){ [[ "$1" ]] && find . -type f -exec grep -il "$1" "{}" \+ ; }
 
 # Crypto
-AGE_ID="~/.age/age-id-20250308"
+AGE_ID="$HOME/.age/age-id-20250308"
 AGE_ACCT=sempernow
 agere(){
     type -t age-keygen >/dev/null 2>&1 &&
