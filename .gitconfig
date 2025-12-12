@@ -1,12 +1,12 @@
 [core]
 	autocrlf = false
 	safecrlf = false
-	editor = vim
-	pager  = less -x1,3
+	editor   = vim
+	pager    = less -x1,3
 	excludesfile = ~/.gitignore_global
 [user]
-	name    = dev
-	email   = sempernow.com@gmail.com
+	name    = dostourian
+	email   = dostourian@gmail.com
 	account = sempernow
 [http]
 	sslVerify = false
@@ -26,3 +26,5 @@
 [init]
 	defaultBranch = master
 
+[pull]
+	rebase = true

@@ -58,23 +58,20 @@ gc(){ # commit -m [MSG]
 }
 gpf(){ git push --force-with-lease; } # force required after rebase
 gr(){
-    count_commits=$(( $( git rev-list --count HEAD ) - 1 ))
+  (( $1 )) && count_commits=$1 || count_commits=$(( $( git rev-list --count HEAD ) - 1 ))
     (( "$count_commits" < 2 )) && {
-        gl; printf "\n%s\n" 'Not enough commits to squash.'
-    } || {
-        echo "
-            Interactive rebase, squashing $count_commits (max) commits.
-            
-            Launches editor.
-            Replace all 'pick' with 's' (squash, but keep messages),
-            else 'f' (fix; squash sans),
-            except 1st (oldest) listed (for max squash).
-            Subsequent push probably requires:
-            "'`git push --force-with-lease`.'"
-            Else abort by "'`git rebase --abort`.'
-
-        git rebase -i HEAD~$count_commits
-    }
+        gl; printf "\n%s\n\n%s\n" '🔍  Not enough commits to squash.' '🔚 Aborting ...'
+        
+        return 0
+    } 
+    read -p "🚧  Rebase most recent $count_commits commits interactively? [y/N] " -n 1 -r REPLY
+    echo 
+    if [[ ! "$REPLY" =~ ^[Yy]$ ]]; then
+        echo -e "\n🔚  Aborting ...\n"
+        
+        return 0
+    fi
+    git rebase -i HEAD~$count_commits
 }
 grs(){
     glo
