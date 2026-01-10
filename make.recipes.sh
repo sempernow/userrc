@@ -41,17 +41,17 @@ sync_bins_all(){
 
 user(){
     # Configure current user : UPDATEs ONLY
+    # Save prior dot files
+    pushd ~
+    tar -cvaf ~/dotfiles-prior-$(date -Id).tgz --exclude='.*/*' .[a-zA-Z]*
+    popd 
+    # Copy root dot files 
     find . -maxdepth 1 -type f -iname '.*' -exec cp -up {} ~/ \;
     find functions -type f -iname '*.sh' -exec /bin/bash -c '
         f=${1##*/};cp -up $1 ${0}/.bashrc_${f%%.*}
     ' $HOME {} \;
     [[ "$HAS_WSL" ]] || rm -f ~/.bashrc_win
     [[ "$IS_SUB" ]]  || rm -f ~/.bashrc_sub
-    chmod 0644 ~/.profile
-    chmod 0644 ~/.bash*
-    chmod 0644 ~/.gitignor*
-    chmod 0644 ~/.gitconf*
-    chmod 0644 ~/.vim*
 
     [[ -d ~/.local/bin ]] || {
         mkdir -p ~/.local/bin

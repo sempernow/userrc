@@ -4,27 +4,23 @@
 	editor   = vim
 	pager    = less -x1,3
 	excludesfile = ~/.gitignore_global
-[user]
-	name    = dostourian
-	email   = dostourian@gmail.com
-	account = sempernow
-[http]
-	sslVerify = false
 [credential]
 	helper = cache
+[init]
+	defaultBranch = master
+[alias]
+	g = grep --break --heading --line-number
+[http]
+	sslVerify = false
+[push]
+	default = current
+	autoSetupRemote = true
+[pull]
+	rebase = true
+[grep]
+	lineNumber = true
 [filter "lfs"]
 	clean    = git-lfs clean -- %f
 	smudge   = git-lfs smudge -- %f
 	process  = git-lfs filter-process
 	required = true
-[push]
-	default = current
-[alias]
-	g = grep --break --heading --line-number
-[grep]
-	lineNumber = true
-[init]
-	defaultBranch = master
-
-[pull]
-	rebase = true

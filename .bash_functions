@@ -160,10 +160,14 @@ selinux(){
 
 #########
 # systemd
-units(){ systemctl list-unit-files; }
-journal(){ # -e : Jump to end, --no-pager : Show full message (truncated by default), -u : Unit file (service).
-    [[ $2 ]] && { sudo journalctl --no-pager -e "$@"; return; }
-    [[ $1 ]] && sudo journalctl --no-pager -e -u "$@" || sudo journalctl --no-pager -xe "$@"
+unitfiles(){ systemctl list-unit-files; }
+journal(){ 
+    [[ $1 ]] && { sudo journalctl --no-pager --full -e -u "$@"; return $?; }
+    sudo journalctl --no-pager -e --since='1 hour ago'
+}
+status(){
+    [[ $1 ]] || { type $FUNCNAME; return 1; }
+    systemctl status --no-pager --full $1
 }
 
 #######
@@ -192,21 +196,9 @@ psp(){ # ps : Process info of declared pattern (command, PID, ...), else all of 
 }
 
 # Memory
-psrss(){ # RSS usage [MiB] of declared command ($1) else top 12
-    e=-e
-    [[ "$1" =~ ^-?[0-9]+$ ]] && n=$1 || {
-        n=12;[[ $1 ]] && unset e 
-    }
-    ps -o pid,comm,rss,pmem,pcpu --sort=-rss \
-        |awk '{ printf "%-8s %-22s %s[MiB]   %5s %5s\n", $1, $2, $3, $4,$5}' |head -1
-    [[ $e ]] || ps -C $1 -o pid,comm,rss,pmem,pcpu --sort=-rss --no-headers \
-        |awk '{ printf "%-8s %-20s %6.0f       %5s %5s\n", $1, $2, $3/1024, $4, $5}' |head -$n
-    [[ $e ]] && ps $e -o pid,comm,rss,pmem,pcpu --sort=-rss --no-headers \
-        |awk '{ printf "%-8s %-20s %6.0f       %5s %5s\n", $1, $2, $3/1024, $4, $5}' |head -$n
-}
 rss(){ # Show actual (physical) memory usage (RSS, HWM, etc.) of a process by its command ($1)
+    [[ $1 ]] || { type $FUNCNAME; return 1; }
     pid_of_cmd(){
-        [[ $1 ]] || return 1
         ps -C $1 |grep $1 |awk '{print $1}'
     }
     pid=$(pid_of_cmd $1) && cat /proc/$pid/status \
