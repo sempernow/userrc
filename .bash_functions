@@ -27,41 +27,41 @@ trim(){ local x="${@##+([[:space:]])}"; x="${x%%+([[:space:]])}"; printf "%s" "$
 nist(){ cat </dev/tcp/time.nist.gov/13; }
 today(){
     # YYY-MM-DD
-    t="$(date +"+%F")";echo "$t"
+    t="$(date "+%F")";echo "$t"
     #[[ ! "$1" ]] && { REQUIREs putclip ; putclip "$t"; }
     #[[ ! "$1" ]] && { [[ $(type -t putclip) ]] && putclip "$t"; }
 }
 now(){
     # HH.mm.ss
-    t="$(date +"%H.%M.%S")";echo "$t"
+    t="$(date "+%H.%M.%S")";echo "$t"
     #[[ ! "$1" ]] && { [[ $(type -t putclip) ]] && putclip "$t"; }
 }
 todaynow(){
     # YYY-MM-DD_HH.mm.ss
-    t="$(date +"%F_%H.%M.%S")";echo "$t"
+    t="$(date "+%F_%H.%M.%S")";echo "$t"
     #[[ ! "$1" ]] && { [[ $(type -t putclip) ]] && putclip "$t"; }
 }
 
 utc(){
     # YYY-MM-DDTHH.mm.ss [TZ]
-    t="$(date +"%Y-%m-%dT%H:%M:%S [%Z]")";echo "$t"
+    t="$(date "+%Y-%m-%dT%H:%M:%S [%Z]")";echo "$t"
     #[[ ! "$1" ]] && { [[ $(type -t putclip) ]] && putclip "$t"; }
 }
 utco(){
     # YYY-MM-DDTHH.mm.ss-HHHH
-    #t="$(date +"%Y-%m-%dT%H:%M:%S%z")";echo "$t"
+    #t="$(date "+%Y-%m-%dT%H:%M:%S%z")";echo "$t"
     # YYY-MM-DDTHH.mm.ss-HH:HH
     t="$(date --iso-8601=s)";echo "$t"
     #[[ ! "$1" ]] && { [[ $(type -t putclip) ]] && putclip "$t"; }
 }
 gmt(){
     # YYY-MM-DDTHH.mm.ssZ
-    t="$(date -u +"%Y-%m-%dT%H:%M:%SZ")";echo "$t"
+    t="$(date -u "+%Y-%m-%dT%H:%M:%SZ")";echo "$t"
     #[[ ! "$1" ]] && { [[ $(type -t putclip) ]] && putclip "$t"; }
 }
 gmto(){
     # YYY-MM-DDTHH.mm.ss+0000
-    #t="$(date -u +"%Y-%m-%dT%H:%M:%S%z")";echo "$t"
+    #t="$(date -u "+%Y-%m-%dT%H:%M:%S%z")";echo "$t"
     # YYY-MM-DDTHH.mm.ss+00:00
     t="$(date -u --iso-8601=s)";echo "$t"
     #[[ ! "$1" ]] && { [[ $(type -t putclip) ]] && putclip "$t"; }

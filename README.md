@@ -28,7 +28,7 @@ For `$USER`
 make user
 ```
 
-For all users (don't)
+For all users
 
 ```bash
 make all
