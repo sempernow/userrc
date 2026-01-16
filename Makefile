@@ -97,11 +97,12 @@ md2html : makehtml perms
 
 makehtml :
 	find . -type f -iname '*.md' -exec md2html.exe "{}" \;
+	mode
 eol :
 	find . -type f ! -path '*/.git/*' -exec dos2unix {} \+
 mode perms :
 	find . -type d ! -path './.git/*' -exec chmod 0755 "{}" \+
-	find . -type f ! -path './.git/*' -exec chmod 0644 "{}" \+
+	find . -type f ! -path './.git/*' -exec chmod 0640 "{}" \+
 	
 commit push :
 	gc && git push && gl && gs
