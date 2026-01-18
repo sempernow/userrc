@@ -74,6 +74,7 @@ gr(){
     git rebase -i HEAD~$count_commits
 }
 grs(){
+    [[ $1 ]] && msg="$@" || msg="$(git log -1 --pretty=%B)"
     glo
     read -p "⚠️ Squash ALL commits to keep only newest? [y/N] " -n 1 -r REPLY
     echo 
@@ -90,7 +91,7 @@ grs(){
         fi
         echo -e "\n⌛ Squashing ...\n"
 
-        git reset $(git commit-tree HEAD^{tree} -m "$(git log -1 --pretty=%B)")
+        git reset $(git commit-tree HEAD^{tree} -m "$msg")
     fi
 }
 
