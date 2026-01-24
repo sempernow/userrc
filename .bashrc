@@ -6,7 +6,7 @@
 alias os='cat /etc/os-release'
 alias cpu='cat /proc/cpuinfo'
 alias mem='cat /proc/meminfo'
-alias top='top -em -Eg -oRSS'
+alias top='top -em -Eg -oRES'
 alias systemctl='systemctl --no-pager'
 alias journalctl='journalctl --no-pager'
 

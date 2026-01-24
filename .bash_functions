@@ -526,7 +526,7 @@ declared(){
     [[ $1 ]] || printf "  %s\n\n  %s\n" 'List all user-defined variables (v), or functions (f).' 'USAGE: declared v|f'
 }
 fx(){ declare -f; }
-vars(){ declare -p |grep -E 'declare -(x|[a-z]*x)' |awk '{print $3}' |grep -v __git; }
+vars(){ declare -p |command grep -E 'declare -(x|[a-z]*x)' |cut -d' ' -f3- |command grep -v __git; }
 envsans(){
     # Print environment variables without functions
     declare -p |grep -E '^declare -x [^=]+=' |sed 's,",,g' |awk '{print $3}'
