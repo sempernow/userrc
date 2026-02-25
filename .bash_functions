@@ -205,7 +205,7 @@ rss(){ # Show actual (physical) memory usage (RSS, HWM, etc.) of a process by it
         |grep Vm |awk '{ printf "%-8s %5.0f %4s\n", $1, $2/1024,"MiB" }' |grep -v ' 0 '
 }
 meminfo(){
-    cat /proc/meminfo |awk '{ printf "%-16s %10.0f %4s\n", $1, $2/1024,"MiB" }' |grep -v ' 0' 
+    cat /proc/meminfo |awk '{ printf "%-16s %10.3f %4s\n", $1, $2/1000000,"GB" }' |grep -v ' 0' |grep Mem
 }
 alias mem=meminfo
 
