@@ -111,7 +111,7 @@ unset flag_any_k8s
             kube-proxy
         '
         _ps(){
-            [[ "$1" ]] || exit 1
+            [[ "$1" ]] || return 1
             echo @ $1
             ps -ax -o command |grep -- "$1 " |tr ' ' '\n' \
                 |grep -- -- |grep -v color |grep -v grep
@@ -151,15 +151,30 @@ unset flag_any_k8s
 #    k get svc -o jsonpath='{.}' 2>/dev/null || alias k='sudo k3s kubectl'
 #}
 
-# Helm : Capture all dependencies of a chart
-# Save all Docker-image dependencies of a chart 
-# using three helper functions: hdi (list), hvi (validate), dis (save).
-#   hdi $extracted  # $extracted is the extracted-chart folder.
-#   hvi hdi@${extracted}.log
-#   dis hvi@hdi@${extracted}.log
 [[ $(type -t helm) && $(type -t docker) ]] && {
     flag_any_k8s=1
     set -a
+    diffStates(){
+        # Diff declared vs. running state (YAML), per .kind
+        type -t yq > /dev/null 2>&1 || return 1
+        [[ -f $1 && -f $2 ]] || return 2
+        template=$1
+        manifest=$2
+        for kind in $(yq .kind $template |grep -v -- '---')
+        do 
+            [[ $kind == 'null' ]] && continue
+            echo 🔍  kind: $kind
+            command diff <(yq .$kind $template) <(yq .$kind $manifest) |
+                grep -v -- '---' |
+                grep -v '\bnull\b'
+        done
+    }
+    # Helm : Capture all dependencies of a chart
+    # Save all Docker-image dependencies of a chart 
+    # using three helper functions: hdi (list), hvi (validate), dis (save).
+    #   hdi $extracted  # $extracted is the extracted-chart folder.
+    #   hvi hdi@${extracted}.log
+    #   dis hvi@hdi@${extracted}.log
     # List all Docker images of an extracted Helm chart $1 (directory).
     ###############################################################
     # UPDATE: THIS FAILs to capture all. 
@@ -177,7 +192,6 @@ unset flag_any_k8s
             echo "=== USAGE : $FUNCNAME [All options required by helm install] PATH_TO_CHART_FOLDER"
         }
     }
-
     # Validate all Docker images listed in file $1 against those in Docker's cache
     hvi(){
         [[ -f $1 ]] && {
@@ -189,7 +203,6 @@ unset flag_any_k8s
             echo "=== USAGE : $FUNCNAME PATH_TO_IMAGES_LIST_FILE (E.g., hdi@CHART-VER.log)"
         }
     }
-
     # Perform docker save and gzip (*.tar.gz) on all images listed in file $1.
     # To load a saved image, use docker load, *not* docker import.
     dis(){
