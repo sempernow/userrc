@@ -154,20 +154,21 @@ unset flag_any_k8s
 [[ $(type -t helm) && $(type -t docker) ]] && {
     flag_any_k8s=1
     set -a
-    diffStates(){
+    diffStates() {
         # Diff declared vs. running state (YAML), per .kind
-        type -t yq > /dev/null 2>&1 || return 1
-        [[ -f $1 && -f $2 ]] || return 2
-        template=$1
-        manifest=$2
-        for kind in $(yq .kind $template |grep -v -- '---')
-        do 
-            [[ $kind == 'null' ]] && continue
-            echo 🔍  kind: $kind
-            command diff <(yq .$kind $template) <(yq .$kind $manifest) |
-                grep -v -- '---' |
-                grep -v '\bnull\b'
-        done
+        type -t yq > /dev/null 2>&1 || { echo "yq not found" >&2; return 1; }
+        [[ -f $1 && -f $2 ]] || { echo "  USAGE: diffStates <template> <manifest>" >&2; return 2; }
+        local template=$1 manifest=$2
+    
+        # Key on both kind and name to handle multiple resources of a kind
+        while IFS='|' read -r kind name; do
+            [[ -z $kind || $kind == null ]] && continue
+            echo "🔍  KIND: $kind  NAME: $name"
+            diff -u \
+                <(yq 'select(.kind == "'$kind'" and .metadata.name == "'$name'")' "$template") \
+                <(yq 'select(.kind == "'$kind'" and .metadata.name == "'$name'")' "$manifest") \
+            || true
+        done < <(yq -r '"\(.kind)|\(.metadata.name)"' "$template" | grep -v '^null|' | sort -u)
     }
     # Helm : Capture all dependencies of a chart
     # Save all Docker-image dependencies of a chart 
