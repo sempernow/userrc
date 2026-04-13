@@ -66,7 +66,7 @@ colo darkblue                   " Color scheme
 set showmode                    " Show the current mode
 syntax on                       " Turn syntax highlighting on by default
 xnoremap p pgvy                 " Paste repeatedly
-
+set colorcolumn=80
 " Show EOL type and last modified timestamp, right after the filename
 set statusline=%<%F%h%m%r\ [%{&ff}]\ (%{strftime(\"%H:%M\ %d/%m/%Y\",getftime(expand(\"%:p\")))})%=%l,%c%V\ %P
 
