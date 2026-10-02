@@ -27,7 +27,7 @@ alias isdos=isDOS
 # FS
 alias ls='ls -hl --color=auto --group-directories-first'
 alias -p |grep ' ll=' >/dev/null 2>&1 && unalias ll
-alias ll='ls -Ahlrt --time-style=long-iso'
+alias ll='ls -Ahl --time-style=long-iso'
 ll >/dev/null 2>&1 || alias ll='ls -Ahlrt --group-directories-first'
 alias df='df -hT'
 alias du='du -h'

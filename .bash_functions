@@ -247,6 +247,9 @@ randa(){
     # ARGs: [LENGTH(Default:32]
     cat /dev/urandom |tr -dc 'a-zA-Z0-9' |fold -w ${1:-32} |head -n 1
 }
+type -t uuid > /dev/null 2>&1 || uuid(){
+    cat /proc/sys/kernel/random/uuid
+}
 md5()    {( algo=$FUNCNAME ; _hash "$@" ; )}
 sha()    {( algo=$FUNCNAME ; _hash "$@" ; )}
 sha1()   {( algo=$FUNCNAME ; _hash "$@" ; )}
