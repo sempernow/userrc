@@ -33,7 +33,7 @@
 #   handles protocol/port requests from client applications,
 #   as a persistent background process: (See man page SSH(1); -D)
 #       
-#     ssh -D $local_port -fCNq ... USER@PRIVATE_IP_of_PUBLIC_NODE
+#     ssh -D $local_port -fCN ... USER@PRIVATE_IP_of_PUBLIC_NODE
 # 
 # ARGs: IP [TTL(-1 for infinity, else seconds, else default=300)]
 # 
@@ -58,16 +58,16 @@ key=/home/$user/.ssh/swarm-aws.pem
 [[ -f $key ]] || { echo "FAIL @ SSH key : NOT EXIST : '$key'";exit 2; }
 
 # Test for existing tunnel; abort if so.
-export ok="$(ps aux |grep -- "-D $port -fCNq ${user}@$ip" |grep -v grep)"
+export ok="$(ps aux |grep -- "-D $port -fCN ${user}@$ip" |grep -v grep)"
 [[ $ok ]] && { echo "SOCKS5 proxy is ALREADY UP";exit 0; }
 
 # Configure the ssh server of the node having web access ($ip) as our SOCKS5 proxy 
 # by establishing a tunnel to it; forwarding a local port ($port) to one of its dynamic ports.
 echo "Establish SOCKS5 proxy server @ $ip"
-nohup /bin/bash -c "ssh -o StrictHostKeyChecking=no -D $port -fCNq ${user}@$ip -i $key &" > /dev/null 2>&1
+nohup /bin/bash -c "ssh -o StrictHostKeyChecking=no -D $port -fCN ${user}@$ip -i $key &" > /dev/null 2>&1
 
 # Validate proxy tunnel is up; report and abort on fail.
-sleep 2 && ok="$(ps aux |grep -- "-D $port -fCNq ${user}@$ip" |grep -v grep)"
+sleep 2 && ok="$(ps aux |grep -- "-D $port -fCN ${user}@$ip" |grep -v grep)"
 [[ $ok ]] || { echo "FAIL @ SOCKS5 : process is NOT RUNNING.";exit 3; }
 
 # Declare proxy params : current shell

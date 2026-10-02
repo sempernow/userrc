@@ -23,7 +23,7 @@ makesocks(){
     [[ "$(ps aux |grep $port |grep $ip)" ]] && {
         showsocks
     } || {
-        ssh -i $HOME/.ssh/vm_common -fNqT -D $port $ip \
+        ssh -i $HOME/.ssh/vm_common -CfND $port $ip \
             && showsocks
     }
 }
