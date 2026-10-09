@@ -53,7 +53,7 @@ dii(){
         echo "USAGE : $FUNCNAME <IMAGE>"
         return 2
     }
-    docker image inspect $1 |yq eval -P -o yaml |yq '.[] | (.RepoTags,.RepoDigests,.Config)'
+    docker image inspect $1 |yq -p json |yq '.[] | (.RepoTags,.RepoDigests,.Config)'
 }
 drmi(){ # Remove image(s) per substring ($1), else prune
     [[ "$1" ]] &&
