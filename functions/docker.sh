@@ -37,9 +37,9 @@ dij(){ # as valid JSON
             jq -Mr . --slurp
 }
 dit(){ 
-    [[ $2 =~ 'digest' ]] && digest=--digests || unset digest
-    [[ $1 =~ '--digest' ]] && digest=--digests && set --
-    d(){ docker image ls $digest  --format "table {{.ID}}\t{{.Repository}}:{{.Tag}}\t{{.Size}}"; }
+    [[ $2 =~ 'digest' ]] && digest='\t{{.Digest}}' || unset digest
+    [[ $1 =~ '--digest' ]] && digest='\t{{.Digest}}' && set --
+    d(){ docker image ls --format "table {{.ID}}\t{{.Repository}}:{{.Tag}}\t{{.Size}}$digest"; }
     d |head -n1
     [[ $1 ]] && d |grep $1 |grep -v REPOSITORY |sort -t' ' -k2
     [[ $1 ]] || d |grep -v REPOSITORY |sort -t' ' -k2
