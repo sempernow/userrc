@@ -47,7 +47,9 @@ alias sha2=sha256
 
 # Network
 ip -c addr > /dev/null 2>&1 && alias ip='ip -c'
+myip(){ dig +short myip.opendns.com @resolver1.opendns.com; }
 
+# Meta
 # Test for GNU Bourne-Again SHell (bash) and end here if not
 if [ -n "$BASH_VERSION" ]; then
     isBash=1 
